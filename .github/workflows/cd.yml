@@ -18,6 +18,7 @@ jobs:
         uses: google-github-actions/auth@v1
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
+          export_environment_variables: true
 
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
@@ -27,13 +28,14 @@ jobs:
       - name: Build and Push Docker Image
         run: |
           gcloud auth configure-docker us-central1-docker.pkg.dev
-          docker build -t us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/my-repo/my-image:latest .
-          docker push us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/my-repo/my-image:latest
+          IMAGE_NAME=us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/my-repo/precios-casa-api:latest
+          docker build -t $IMAGE_NAME .
+          docker push $IMAGE_NAME
 
       - name: Deploy to Cloud Run
         run: |
           gcloud run deploy precios-casa-api \
-            --image=us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/my-repo/my-image:latest \
+            --image=us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/my-repo/precios-casa-api:latest \
             --platform=managed \
             --region=us-central1 \
             --allow-unauthenticated
