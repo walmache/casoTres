@@ -18,6 +18,7 @@ jobs:
         uses: google-github-actions/auth@v1
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
+          export_environment_variables: true
 
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
@@ -26,13 +27,17 @@ jobs:
 
       - name: Build and Push Docker Image
         run: |
+          echo "Authenticating Docker to Artifact Registry..."
           gcloud auth configure-docker us-central1-docker.pkg.dev
           IMAGE_NAME=us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/my-repo/precios-casa-api:latest
+          echo "Building Docker image: $IMAGE_NAME"
           docker build -t $IMAGE_NAME .
+          echo "Pushing Docker image to Artifact Registry..."
           docker push $IMAGE_NAME
 
       - name: Deploy to Cloud Run
         run: |
+          echo "Deploying to Cloud Run..."
           gcloud run deploy precios-casa-api \
             --image=us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/my-repo/precios-casa-api:latest \
             --platform=managed \
