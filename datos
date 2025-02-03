@@ -1,0 +1,26 @@
+Número de proyecto: 469771914080 ID del proyecto: cicdpractico 
+
+ID de la cuena de servicio github-deployer@cicdpractico.iam.gserviceaccount.com
+
+
+gcloud config set project cicdpractico
+
+gcloud services enable cloudbuild.googleapis.com run.googleapis.com artifactregistry.googleapis.com
+
+gcloud projects add-iam-policy-binding cicdpractico \
+  --member="serviceAccount:github-deployer@cicdpractico.iam.gserviceaccount.com" \
+  --role="roles/run.admin"
+
+gcloud projects add-iam-policy-binding cicdpractico \
+  --member="serviceAccount:github-deployer@cicdpractico.iam.gserviceaccount.com" \
+  --role="roles/storage.admin"
+
+gcloud projects add-iam-policy-binding cicdpractico \
+  --member="serviceAccount:github-deployer@cicdpractico.iam.gserviceaccount.com" \
+  --role="roles/artifactregistry.writer"
+
+gcloud projects add-iam-policy-binding cicdpractico \
+  --member="serviceAccount:github-deployer@cicdpractico.iam.gserviceaccount.com" \
+  --role="roles/viewer"
+
+gcloud projects get-iam-policy cicdpractico --flatten="bindings[].members" --format="table(bindings.role, bindings.members)"
